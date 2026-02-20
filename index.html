@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NetScan Pro — Network Vulnerability Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="nav-brand">
+      <div class="brand-icon-wrap"><div class="radar-ring"></div><span class="brand-dot">◉</span></div>
+      <span class="brand-txt">NetScan<em>Pro</em></span>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-view="scanner">Scanner</button>
+      <button class="nav-tab" data-view="cve">CVE Lookup</button>
+      <button class="nav-tab" data-view="report">Report</button>
+      <button class="nav-tab" data-view="about">About</button>
+    </div>
+    <div class="nav-status">
+      <span class="ns-badge safe" id="statusBadge">● IDLE</span>
+      <span class="ns-time" id="navTime"></span>
+    </div>
+  </nav>
+
+  <!-- VIEWS -->
+  <div class="view-container">
+
+    <!-- ===== SCANNER VIEW ===== -->
+    <div class="view active" id="view-scanner">
+      <div class="scanner-layout">
+
+        <!-- Input Panel -->
+        <div class="input-panel">
+          <h2 class="panel-title">Target Configuration</h2>
+
+          <label class="lbl">TARGET HOST / IP</label>
+          <input id="targetHost" class="ns-input" type="text" value="192.168.1.1" placeholder="e.g. 192.168.1.1 or example.com"/>
+
+          <label class="lbl">SCAN TYPE</label>
+          <div class="scan-type-grid">
+            <label class="scan-type-opt">
+              <input type="radio" name="scanType" value="quick" checked/>
+              <div class="opt-card">
+                <div class="opt-icon">⚡</div>
+                <div class="opt-name">Quick Scan</div>
+                <div class="opt-desc">Top 100 ports</div>
+              </div>
+            </label>
+            <label class="scan-type-opt">
+              <input type="radio" name="scanType" value="full"/>
+              <div class="opt-card">
+                <div class="opt-icon">🔍</div>
+                <div class="opt-name">Full Scan</div>
+                <div class="opt-desc">All 65535 ports</div>
+              </div>
+            </label>
+            <label class="scan-type-opt">
+              <input type="radio" name="scanType" value="stealth"/>
+              <div class="opt-card">
+                <div class="opt-icon">👤</div>
+                <div class="opt-name">Stealth</div>
+                <div class="opt-desc">SYN half-open</div>
+              </div>
+            </label>
+            <label class="scan-type-opt">
+              <input type="radio" name="scanType" value="vuln"/>
+              <div class="opt-card">
+                <div class="opt-icon">🛡</div>
+                <div class="opt-name">Vuln Check</div>
+                <div class="opt-desc">Known CVEs</div>
+              </div>
+            </label>
+          </div>
+
+          <label class="lbl">PORT RANGE</label>
+          <div class="port-presets">
+            <button class="preset-btn active" data-ports="1-1024">Common (1–1024)</button>
+            <button class="preset-btn" data-ports="1-65535">All Ports</button>
+            <button class="preset-btn" data-ports="custom">Custom</button>
+          </div>
+          <input id="customPorts" class="ns-input" type="text" placeholder="e.g. 80,443,8080,3306" style="display:none;margin-top:8px"/>
+
+          <label class="lbl">OPTIONS</label>
+          <div class="options-checks">
+            <label class="chk-opt"><input type="checkbox" id="optOS" checked/> OS Detection</label>
+            <label class="chk-opt"><input type="checkbox" id="optVersion" checked/> Version Detection</label>
+            <label class="chk-opt"><input type="checkbox" id="optScripts"/> Run NSE Scripts</label>
+            <label class="chk-opt"><input type="checkbox" id="optVerbose"/> Verbose Output</label>
+          </div>
+
+          <button class="scan-btn" id="scanBtn">▶ START SCAN</button>
+          <button class="scan-btn secondary" id="stopBtn" style="display:none">■ STOP SCAN</button>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="results-panel">
+
+          <!-- Progress -->
+          <div class="scan-progress" id="scanProgress" style="display:none">
+            <div class="prog-header">
+              <span id="progLabel">Initialising...</span>
+              <span id="progPct">0%</span>
+            </div>
+            <div class="prog-bar-bg">
+              <div class="prog-bar-fill" id="progFill"></div>
+            </div>
+            <div class="prog-detail" id="progDetail">Resolving hostname...</div>
+          </div>
+
+          <!-- Summary Cards -->
+          <div class="summary-row" id="summaryRow" style="display:none">
+            <div class="sum-card open"><div class="sum-num" id="sumOpen">0</div><div class="sum-lbl">Open Ports</div></div>
+            <div class="sum-card closed"><div class="sum-num" id="sumClosed">0</div><div class="sum-lbl">Closed</div></div>
+            <div class="sum-card filtered"><div class="sum-num" id="sumFiltered">0</div><div class="sum-lbl">Filtered</div></div>
+            <div class="sum-card vuln"><div class="sum-num" id="sumVuln">0</div><div class="sum-lbl">Vulnerabilities</div></div>
+          </div>
+
+          <!-- Host Info -->
+          <div class="host-info" id="hostInfo" style="display:none">
+            <div class="hi-row"><span class="hi-lbl">HOST</span><span class="hi-val" id="hiHost">—</span></div>
+            <div class="hi-row"><span class="hi-lbl">STATUS</span><span class="hi-val green" id="hiStatus">—</span></div>
+            <div class="hi-row"><span class="hi-lbl">OS</span><span class="hi-val" id="hiOS">—</span></div>
+            <div class="hi-row"><span class="hi-lbl">LATENCY</span><span class="hi-val" id="hiLatency">—</span></div>
+            <div class="hi-row"><span class="hi-lbl">SCAN TIME</span><span class="hi-val" id="hiTime">—</span></div>
+          </div>
+
+          <!-- Port Table -->
+          <div class="port-table-wrap" id="portTableWrap" style="display:none">
+            <div class="pt-header">
+              <h3 class="pt-title">PORT RESULTS</h3>
+              <input id="portFilter" class="pt-search" type="text" placeholder="Filter ports..."/>
+            </div>
+            <table class="port-table" id="portTable">
+              <thead>
+                <tr>
+                  <th>PORT</th><th>PROTOCOL</th><th>STATE</th><th>SERVICE</th><th>VERSION</th><th>RISK</th>
+                </tr>
+              </thead>
+              <tbody id="portBody"></tbody>
+            </table>
+          </div>
+
+          <!-- Vulnerability Findings -->
+          <div class="vuln-findings" id="vulnFindings" style="display:none">
+            <h3 class="section-title">VULNERABILITY FINDINGS</h3>
+            <div id="vulnList"></div>
+          </div>
+
+          <!-- Empty state -->
+          <div class="scanner-empty" id="scannerEmpty">
+            <div class="empty-radar">
+              <div class="radar-outer"></div>
+              <div class="radar-sweep"></div>
+              <div class="radar-lines"></div>
+            </div>
+            <p class="empty-txt">Configure target and click START SCAN</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CVE LOOKUP ===== -->
+    <div class="view" id="view-cve">
+      <div class="cve-layout">
+        <h2 class="page-h2">CVE Vulnerability Database</h2>
+        <div class="cve-search-row">
+          <input id="cveSearch" class="ns-input big" type="text" placeholder="Search by CVE ID, software, or keyword…"/>
+          <button class="scan-btn small" onclick="searchCVE()">SEARCH</button>
+        </div>
+        <div class="cve-quick">
+          <span class="cve-quick-lbl">Quick search:</span>
+          <button class="quick-tag" onclick="setCVESearch('OpenSSL')">OpenSSL</button>
+          <button class="quick-tag" onclick="setCVESearch('Apache')">Apache</button>
+          <button class="quick-tag" onclick="setCVESearch('SSH')">SSH</button>
+          <button class="quick-tag" onclick="setCVESearch('RDP')">RDP</button>
+          <button class="quick-tag" onclick="setCVESearch('Log4j')">Log4j</button>
+          <button class="quick-tag" onclick="setCVESearch('SMB')">SMB</button>
+        </div>
+        <div class="cve-results" id="cveResults"></div>
+      </div>
+    </div>
+
+    <!-- ===== REPORT VIEW ===== -->
+    <div class="view" id="view-report">
+      <div class="report-layout">
+        <div class="report-hdr">
+          <h2 class="page-h2">Scan Report</h2>
+          <div class="report-actions">
+            <button class="scan-btn small" onclick="exportReport('json')">Export JSON</button>
+            <button class="scan-btn small" onclick="exportReport('txt')">Export TXT</button>
+          </div>
+        </div>
+        <div class="report-body" id="reportBody">
+          <div class="report-empty">No scan completed yet. Run a scan first.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ABOUT ===== -->
+    <div class="view" id="view-about">
+      <div class="about-layout">
+        <h2 class="page-h2">About NetScan Pro</h2>
+        <div class="about-card">
+          <p>NetScan Pro is a <strong>simulated network vulnerability scanner</strong> that demonstrates the concepts and workflow of tools like Nmap, Nessus, and OpenVAS. All scan results are generated algorithmically — no actual network packets are sent.</p>
+          <h3>Concepts Demonstrated</h3>
+          <ul>
+            <li>TCP/UDP port scanning (SYN, full connect, stealth methods)</li>
+            <li>OS fingerprinting and version detection</li>
+            <li>CVE (Common Vulnerabilities and Exposures) matching</li>
+            <li>CVSS v3.1 severity scoring</li>
+            <li>Network security report generation</li>
+            <li>Nmap-style output formatting</li>
+          </ul>
+          <h3>Technologies</h3>
+          <ul>
+            <li>HTML5, CSS3, Vanilla JavaScript (ES6+)</li>
+            <li>No external dependencies</li>
+            <li>Downloadable JSON/TXT reports</li>
+          </ul>
+          <h3>⚠ Disclaimer</h3>
+          <p>This is an <strong>educational simulation only</strong>. No actual network scanning occurs. Never scan systems you do not own or have explicit written permission to test.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
