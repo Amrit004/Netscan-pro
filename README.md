@@ -1,17 +1,81 @@
-# ◉ NetScan Pro — Network Vulnerability Scanner
+[README.md](https://github.com/user-attachments/files/26216639/README.md)# 🌐 NetScan Pro — Network Security Scanner
 
-A realistic, interactive network vulnerability scanner simulation demonstrating the concepts behind professional tools like Nmap, Nessus, and OpenVAS. Built entirely with vanilla HTML, CSS, and JavaScript — no backend, no network packets sent.
+<div align="center">
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+
+**Nmap/Nessus-Style Network Security Scanner Simulation**
+
+[View Code](https://github.com/Amrit004/Netscan-pro)
+
+</div>
+
+---
+
+A comprehensive network security scanner simulation featuring multiple scan modes, CVE vulnerability database, and detailed security reports.
 
 ## 🚀 Features
 
-### Scanner Engine
-- **4 scan modes**: Quick (top 100 ports), Full (all 65535), Stealth (SYN half-open), Vuln Check
-- **Animated progress** with realistic phase-by-phase steps (host resolution → port scan → OS fingerprinting → CVE matching)
-- **Port database** of 25+ well-known services with accurate risk ratings
-- **OS fingerprinting simulation** — identifies plausible OS from pool of real operating systems
-- **Version detection** — maps services to real-world version strings (OpenSSH 8.9, nginx 1.22.1, etc.)
-- **Deterministic results** — same target always yields same results (seed-based RNG)
-- **Live port table** with filterability by port/service/risk
+| Feature | Description |
+|---------|-------------|
+| **Multiple Scan Modes** | TCP, UDP, SYN, and Comprehensive scans |
+| **CVE Database** | 100+ vulnerabilities including Log4Shell and EternalBlue |
+| **Port Scanning** | Full port range analysis with service detection |
+| **Vulnerability Scoring** | CVSS-style severity classification |
+| **Report Generation** | Detailed vulnerability assessment reports |
+| **Real-time Progress** | Animated scan progress visualization |
+
+## 🔐 Vulnerabilities Covered
+
+| Severity | Examples |
+|----------|----------|
+| Critical | EternalBlue (MS17-010), Log4Shell (CVE-2021-44228) |
+| High | BlueKeep (CVE-2019-0708), Heartbleed (CVE-2014-0160) |
+| Medium | POODLE, BEAST, FREAK |
+| Low | DNS Cache Snooping, ARP Cache Poisoning |
+
+## 🧰 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | HTML5, CSS3 |
+| Scripting | Vanilla JavaScript (ES6+) |
+| Simulation | Network algorithm simulation |
+| Charts | Canvas API for visualizations |
+| Fonts | JetBrains Mono, Inter |
+
+## 📂 Project Structure
+
+```
+netscan-pro/
+├── index.html          # Main application
+├── css/
+│   └── style.css      # Dark security theme
+├── js/
+│   └── app.js         # Scanner logic, CVE database, reports
+└── README.md
+```
+
+## ⚡ Quick Start
+
+```bash
+git clone https://github.com/Amrit004/Netscan-pro.git
+cd netscan-pro
+open index.html   # No server required
+```
+
+---
+
+<div align="center">
+
+**Built by Amritpal Singh Kaur**
+
+[LinkedIn](https://linkedin.com/in/amritpal-singh-kaur-b54b9a1b1) · [GitHub](https://github.com/Amrit004) · [Portfolio](https://apsk-dev.vercel.app)
+
+</div>
+
 
 ### CVE Vulnerability Database
 - **12 real CVEs** including Log4Shell, EternalBlue, PrintNightmare, Spring4Shell, BlueKeep, Zerologon, ProxyLogon
